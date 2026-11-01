@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#172126" />
+    <title>摸鱼勿扰 | 无限摸鱼 · 金币商店</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="game-shell" aria-labelledby="game-title">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">MF</span>
+          <div>
+            <h1 id="game-title">摸鱼勿扰</h1>
+            <p id="gameSubtitle">无限摸鱼 / 原创像素弹幕</p>
+          </div>
+        </div>
+
+        <div class="header-actions" aria-label="游戏设置">
+          <button class="icon-button" id="soundButton" type="button" aria-label="开启音效" title="开启音效">
+            <span class="sound-icon" aria-hidden="true">♪</span>
+          </button>
+          <button class="icon-button" id="pauseButton" type="button" aria-label="暂停游戏" title="暂停游戏" disabled>
+            <span aria-hidden="true">Ⅱ</span>
+          </button>
+        </div>
+      </header>
+
+      <nav class="mode-switch" aria-label="选择游戏模式">
+        <button id="stallModeButton" type="button" class="mode-button is-selected" aria-pressed="true"><span>卫生间摸鱼</span><small>像素弹幕</small></button>
+        <button id="snackModeButton" type="button" class="mode-button" aria-pressed="false"><span>上课偷吃</span><small>按住吃 · 松手藏</small></button>
+        <button id="officeModeButton" type="button" class="mode-button" aria-pressed="false"><span>办公室摸鱼</span><small>老板巡视</small></button>
+      </nav>
+
+      <section class="loadout-bar" aria-label="金币和难度">
+        <div class="difficulty-switch" aria-label="选择难度">
+          <button id="normalButton" class="tier-button is-selected" type="button" aria-pressed="true">普通</button>
+          <button id="advancedButton" class="tier-button" type="button" aria-pressed="false">高级 · 未解锁</button>
+        </div>
+        <button class="wallet-button" id="shopButton" type="button" aria-label="打开金币商店"><span aria-hidden="true">◉</span> <b id="walletValue">0</b><span class="shop-word"> 商店</span></button>
+      </section>
+
+      <section class="hud" aria-label="本局状态">
+        <div class="hud-group time-group">
+          <span class="hud-label" id="timeLabel">坚持时间</span>
+          <strong id="timeValue">00:00</strong>
+        </div>
+        <div class="hud-group score-group">
+          <span class="hud-label">本局金币</span>
+          <strong id="runCoinsValue">+0</strong>
+        </div>
+        <div class="hud-group combo-group">
+          <span class="hud-label" id="comboLabel">波次</span>
+          <strong id="comboValue">1</strong>
+        </div>
+        <div class="hud-group privacy-group">
+          <span class="hud-label">生命</span>
+          <div class="privacy-pips" id="privacyPips" aria-label="镇定值 3 格">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" id="stage" aria-label="游戏区域">
+        <canvas id="gameCanvas" width="960" height="600" aria-label="隔间躲避游戏画面"></canvas>
+
+        <div class="event-banner" id="eventBanner" aria-live="polite">
+          <span class="event-dot" aria-hidden="true"></span>
+          <span id="eventText">课间信号稳定</span>
+        </div>
+
+        <div class="snack-progress" id="snackProgress" hidden>
+          <div class="snack-progress-caption"><span id="progressLabel">零食进度</span><strong id="snackProgressValue">0%</strong></div>
+          <div class="snack-progress-track" id="snackProgressTrack" role="progressbar" aria-label="零食进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="snackProgressBar"></span></div>
+        </div>
+
+        <div class="game-overlay is-visible" id="gameOverlay">
+          <div class="overlay-panel" id="startPanel">
+            <p class="overlay-kicker" id="startKicker">ENDLESS / 无尽模式</p>
+            <h2 id="startTitle">别让怒气碰到心</h2>
+            <p class="overlay-copy" id="startCopy">移动红心躲弹幕，活得越久，金币越多。</p>
+            <p class="difficulty-info" id="difficultyInfo">普通 · 3 生命 · 金币 ×1</p>
+            <button class="primary-button" id="startButton" type="button">
+              <span>开一局</span>
+              <span class="button-arrow" aria-hidden="true">→</span>
+            </button>
+            <div class="session-facts" aria-label="游戏规则">
+              <span id="sessionRule">无限时长</span><span>最高分 <b id="bestValue">0</b></span><span id="skinName">初心红</span>
+            </div>
+          </div>
+
+          <div class="overlay-panel" id="pausePanel" hidden>
+            <p class="overlay-kicker">PAUSED</p>
+            <h2>先稳住</h2>
+            <button class="primary-button" id="resumeButton" type="button">
+              <span>继续</span>
+              <span class="button-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="text-button" id="pauseMenuButton" type="button">结束本局并结算</button>
+          </div>
+
+          <div class="overlay-panel" id="resultPanel" hidden>
+            <p class="overlay-kicker" id="resultKicker">ROUND OVER</p>
+            <h2 id="resultTitle">被发现了</h2>
+            <p class="result-score"><span id="resultScore">0</span> 分</p>
+            <p class="overlay-copy" id="resultCopy">调整呼吸，再试一局。</p>
+            <button class="primary-button" id="restartButton" type="button">
+              <span>再来一次</span>
+              <span class="button-arrow" aria-hidden="true">↻</span>
+            </button>
+            <button class="text-button" id="resultMenuButton" type="button">换个模式</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls" id="stallControls" aria-label="卫生间模式操作">
+        <button class="control-button direction-button" id="leftButton" type="button" aria-label="向左移动" disabled>←<span class="key-hint">A</span></button>
+        <button class="control-button direction-button" id="upButton" type="button" aria-label="向上移动" disabled>↑<span class="key-hint">W</span></button>
+        <button class="control-button direction-button" id="downButton" type="button" aria-label="向下移动" disabled>↓<span class="key-hint">S</span></button>
+        <button class="control-button direction-button" id="rightButton" type="button" aria-label="向右移动" disabled>→<span class="key-hint">D</span></button>
+      </section>
+
+      <section class="snack-controls" id="snackControls" aria-label="上课偷吃操作" hidden>
+        <button class="control-button eat-button" id="eatButton" type="button" disabled>
+          <span class="cookie-icon" id="actionIcon" aria-hidden="true">●</span><span><strong id="eatLabel">按住吃零食</strong><small id="actionHint">松手立刻藏好 · 空格 / Enter</small></span>
+        </button>
+        <p class="snack-tip" id="actionTip">写板书时按住吃，回头前松手。每吃完一包自动续上，无限挑战。</p>
+      </section>
+
+      <p class="sr-only" id="screenReaderStatus" aria-live="assertive"></p>
+    </main>
+
+    <section id="shopPanel" class="shop-overlay" role="dialog" aria-modal="true" aria-labelledby="shopTitle" hidden>
+      <div class="shop-sheet">
+        <header class="shop-header"><div><p class="overlay-kicker">只花游戏内金币</p><h2 id="shopTitle">摸鱼补给站</h2></div><button id="shopCloseButton" type="button" class="icon-button" aria-label="关闭商店">×</button></header>
+        <p class="shop-balance">可用金币 <strong id="shopWallet">0</strong></p>
+        <p id="shopMessage" class="shop-message" aria-live="polite">摸鱼赚金币，购买后永久解锁在本机。</p>
+        <h3>换个颜色，继续摸鱼</h3><p class="shop-description">皮肤改变红心、衣服和电脑配色，不改变能力。</p>
+        <div id="skinList" class="shop-grid"></div>
+        <h3>高级地图</h3><p class="shop-description">2 生命，金币 ×1.5。卫生间为三阶段 BOSS 战，通关额外奖励 80 金币；其他地图检查更频繁。每张地图单独解锁，不重复收费。</p>
+        <div id="mapList" class="shop-grid map-shop-grid"></div>
+        <p class="shop-footnote">金币仅供本游戏使用，无充值。存档保存在当前浏览器，清除数据会丢失。</p>
+      </div>
+    </section>
+
+    <script src="./classroom.js"></script>
+    <script src="./office.js"></script>
+    <script src="./stall-battle.js"></script>
+    <script src="./economy.js"></script>
+    <script src="./game.js"></script>
+  </body>
+</html>
